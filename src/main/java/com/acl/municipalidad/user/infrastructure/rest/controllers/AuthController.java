@@ -48,7 +48,7 @@ public class AuthController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), null));
         }
-        ApiResponse response = new ApiResponse("User successfully registered", request);
+        ApiResponse response = new ApiResponse("User successfully registered", null);
         return ResponseEntity.ok(response);
     }
 
