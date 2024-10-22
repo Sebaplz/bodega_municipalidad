@@ -1,4 +1,4 @@
-package com.acl.municipalidad.user.application.service;
+package com.acl.municipalidad.user.infrastructure.adapter;
 
 import com.acl.municipalidad.user.infrastructure.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,14 +1,13 @@
 package com.acl.municipalidad.objects.domain.model;
 
 import com.acl.municipalidad.user.domain.model.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MunicipalObject {
     private Long id;
     private String name;

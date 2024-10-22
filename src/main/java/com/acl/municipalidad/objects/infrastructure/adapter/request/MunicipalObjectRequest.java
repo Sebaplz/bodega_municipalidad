@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 public class MunicipalObjectRequest {
@@ -20,5 +18,4 @@ public class MunicipalObjectRequest {
     @NotNull(message = "Available quantity is required")
     @Min(value = 1, message = "Available quantity must be at least 1")
     private Integer availableQuantity;
-    private LocalDateTime creationDate;
 }
