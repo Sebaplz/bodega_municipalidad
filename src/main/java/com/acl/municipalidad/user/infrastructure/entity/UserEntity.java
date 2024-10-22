@@ -2,7 +2,6 @@ package com.acl.municipalidad.user.infrastructure.entity;
 
 import com.acl.municipalidad.user.domain.model.Role;
 import com.acl.municipalidad.user.domain.model.User;
-import com.acl.municipalidad.user.infrastructure.adapter.request.RegisterRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,16 +22,33 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
-    @Enumerated(EnumType.ORDINAL)
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
-    public UserEntity(RegisterRequest request) {
-        this.email = request.getEmail();
-        this.password = request.getPassword();
-        this.role = Role.ADMIN;
+    public User toDomain() {
+        User user = new User();
+        user.setId(id);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setRole(role);
+        return user;
+    }
+
+    public static UserEntity fromDomain(User user) {
+        return UserEntity.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .build();
     }
 
     @Override
@@ -47,35 +63,26 @@ public class UserEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
-    }
-
-    public User toDomain() {
-        User user = new User();
-        user.setId(this.id);
-        user.setEmail(this.email);
-        user.setPassword(this.password);
-        user.setRole(Role.ADMIN);
-        return user;
+        return UserDetails.super.isEnabled();
     }
 }
