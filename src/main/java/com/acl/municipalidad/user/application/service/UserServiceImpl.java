@@ -7,6 +7,8 @@ import com.acl.municipalidad.user.domain.port.UserRepositoryPort;
 import com.acl.municipalidad.user.domain.port.UserServicePort;
 import com.acl.municipalidad.user.infrastructure.adapter.request.AuthenticationRequest;
 import com.acl.municipalidad.user.infrastructure.adapter.request.RegisterRequest;
+import com.acl.municipalidad.user.infrastructure.exceptions.EmailAlreadyExistsException;
+import com.acl.municipalidad.user.infrastructure.exceptions.EmailNotFoundException;
 import com.acl.municipalidad.user.infrastructure.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +36,11 @@ public class UserServiceImpl implements UserServicePort {
 
     @Override
     public void registerUser(RegisterRequest request) {
+        Optional<User> existingUser = userRepositoryPort.findByEmail(request.getEmail());
+        if (existingUser.isPresent()) {
+            throw new EmailAlreadyExistsException("Email is already registered");
+        }
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         User newUser = new User();
@@ -51,7 +58,7 @@ public class UserServiceImpl implements UserServicePort {
             );
 
             var user = userJpaRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new EmailNotFoundException("User not found"));
 
             return jwtService.generateToken(user);
         } catch (AuthenticationException e) {

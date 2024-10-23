@@ -1,6 +1,7 @@
 package com.acl.municipalidad.objects.infrastructure.exceptions;
 
 import com.acl.municipalidad.objects.infrastructure.adapter.response.ApiResponse;
+import com.acl.municipalidad.user.infrastructure.exceptions.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -29,4 +30,11 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse("Validation failed", data);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handleUserAlreadyExists(EmailAlreadyExistsException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+
 }
