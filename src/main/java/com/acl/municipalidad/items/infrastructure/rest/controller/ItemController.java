@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/municipal-objects")
+@RequestMapping("/api/v1/items")
 @RequiredArgsConstructor
 public class ItemController {
 
@@ -96,24 +96,24 @@ public class ItemController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping("/my-objects")
+    @GetMapping("/my-items")
     public ResponseEntity<ApiResponse> findAllByOwner(@PageableDefault(size = 10) Pageable pageable) {
         User owner = getAuthenticatedUser();
 
-        // Buscar todos los objetos municipales que pertenezcan al usuario autenticado con paginación
-        Page<Item> municipalObjectsPage = IItemService.findAllByOwner(owner.getId(), pageable);
+        // Buscar todos los items que pertenezcan al usuario autenticado con paginación
+        Page<Item> itemsPage = IItemService.findAllByOwnerId(owner.getId(), pageable);
 
-        // Convertir cada objeto municipal en un DTO usando el mapper
-        List<ItemResponse> responseDtos = municipalObjectsPage.stream()
+        // Convertir cada item en un DTO usando el mapper
+        List<ItemResponse> responseDtos = itemsPage.stream()
                 .map(itemMapper::toResponse)
                 .toList();
 
         // Crear una respuesta con los datos de la página
         Map<String, Object> response = new HashMap<>();
-        response.put("objects", responseDtos);
-        response.put("currentPage", municipalObjectsPage.getNumber());
-        response.put("totalItems", municipalObjectsPage.getTotalElements());
-        response.put("totalPages", municipalObjectsPage.getTotalPages());
+        response.put("items", responseDtos);
+        response.put("currentPage", itemsPage.getNumber());
+        response.put("totalItems", itemsPage.getTotalElements());
+        response.put("totalPages", itemsPage.getTotalPages());
 
         ApiResponse apiResponse = new ApiResponse("Items found", response);
         return ResponseEntity.ok(apiResponse);

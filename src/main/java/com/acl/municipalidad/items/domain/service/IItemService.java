@@ -10,6 +10,6 @@ public interface IItemService {
     Item updateItem(Long id, Item item);
     void deleteItem(Long id);
     Item findItemById(Long id);
-    Page<Item> findAllByOwner(Long ownerId, Pageable pageable);
+    Page<Item> findAllByOwnerId(Long ownerId, Pageable pageable);
     void validateOwnership(Long objectId, User authenticatedUser);
 }

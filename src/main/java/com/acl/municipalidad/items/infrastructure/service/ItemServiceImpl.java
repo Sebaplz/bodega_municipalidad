@@ -48,7 +48,7 @@ public class ItemServiceImpl implements IItemService {
     }
 
     @Override
-    public Page<Item> findAllByOwner(Long ownerId, Pageable pageable) {
+    public Page<Item> findAllByOwnerId(Long ownerId, Pageable pageable) {
         return itemRepository.findAllByOwnerId(ownerId, pageable);
     }
 
