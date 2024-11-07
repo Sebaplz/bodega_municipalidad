@@ -1,6 +1,6 @@
 package com.acl.municipalidad.security;
 
-import com.acl.municipalidad.user.infrastructure.entity.UserEntity;
+import com.acl.municipalidad.user.domain.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
