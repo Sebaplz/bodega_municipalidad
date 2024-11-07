@@ -1,6 +1,6 @@
 package com.acl.municipalidad.security;
 
-import com.acl.municipalidad.user.infrastructure.adapter.UserDetailsServiceImpl;
+import com.acl.municipalidad.user.infrastructure.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

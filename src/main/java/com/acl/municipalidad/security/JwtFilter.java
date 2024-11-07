@@ -1,6 +1,6 @@
 package com.acl.municipalidad.security;
 
-import com.acl.municipalidad.user.infrastructure.adapter.UserDetailsServiceImpl;
+import com.acl.municipalidad.user.infrastructure.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
