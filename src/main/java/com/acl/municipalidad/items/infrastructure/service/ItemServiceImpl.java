@@ -16,6 +16,12 @@ import org.springframework.stereotype.Service;
 public class ItemServiceImpl implements IItemService {
     private final IItemRepository itemRepository;
 
+    // Método privado para encontrar un item por su ID o lanzar una excepción si no se encuentra
+    private Item findItemOrThrow(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+    }
+
     @Override
     public Item createItem(Item item) {
         return itemRepository.save(item);
@@ -23,28 +29,30 @@ public class ItemServiceImpl implements IItemService {
 
     @Override
     public Item updateItem(Long id, Item item) {
-        Item existingObject = itemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        Item existingItem = findItemOrThrow(id);
 
-        existingObject.setName(item.getName());
-        existingObject.setDescription(item.getDescription());
-        existingObject.setAvailableQuantity(item.getAvailableQuantity());
-
-        return itemRepository.save(existingObject);
+        // Actualización parcial: Solo actualiza si el campo no es null
+        if (item.getName() != null) {
+            existingItem.setName(item.getName());
+        }
+        if (item.getDescription() != null) {
+            existingItem.setDescription(item.getDescription());
+        }
+        if (item.getAvailableQuantity() != null) {
+            existingItem.setAvailableQuantity(item.getAvailableQuantity());
+        }
+        return itemRepository.save(existingItem);
     }
 
     @Override
     public void deleteItem(Long id) {
-        Item existingObject = itemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
-
-        itemRepository.deleteById(id);
+        Item existingItem = findItemOrThrow(id);
+        itemRepository.deleteById(existingItem.getId());
     }
 
     @Override
     public Item findItemById(Long id) {
-        return itemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        return findItemOrThrow(id);
     }
 
     @Override
@@ -53,12 +61,10 @@ public class ItemServiceImpl implements IItemService {
     }
 
     public void validateOwnership(Long objectId, User authenticatedUser) {
-        Item existingObject = itemRepository.findById(objectId)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        Item existingItem = findItemOrThrow(objectId);
 
-        if (!existingObject.getOwner().getId().equals(authenticatedUser.getId())) {
+        if (!existingItem.getOwner().getId().equals(authenticatedUser.getId())) {
             throw new UnauthorizedException("User does not have permission to modify this object");
         }
     }
-
 }

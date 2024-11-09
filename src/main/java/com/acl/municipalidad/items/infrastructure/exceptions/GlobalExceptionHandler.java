@@ -37,4 +37,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
+    @ExceptionHandler(SpecialItemException.class)
+    public ResponseEntity<ApiResponse> handleResourceNotFound(SpecialItemException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
 }

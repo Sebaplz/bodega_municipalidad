@@ -1,11 +1,12 @@
 package com.acl.municipalidad.items.infrastructure.rest.controller;
 
-import com.acl.municipalidad.items.domain.model.Item;
-import com.acl.municipalidad.items.domain.service.IItemService;
 import com.acl.municipalidad.items.application.adapter.ItemMapper;
 import com.acl.municipalidad.items.domain.dto.request.ItemRequest;
 import com.acl.municipalidad.items.domain.dto.response.ApiResponse;
 import com.acl.municipalidad.items.domain.dto.response.ItemResponse;
+import com.acl.municipalidad.items.domain.model.Item;
+import com.acl.municipalidad.items.domain.service.IItemService;
+import com.acl.municipalidad.items.infrastructure.service.SpecialItemService;
 import com.acl.municipalidad.user.domain.model.User;
 import com.acl.municipalidad.user.domain.service.IUserService;
 import jakarta.validation.Valid;
@@ -29,21 +30,20 @@ import java.util.Map;
 public class ItemController {
 
     private final IItemService IItemService;
+    private final SpecialItemService specialItemService;
     private final IUserService IUserService;
     private final ItemMapper itemMapper;
 
     // Método privado para obtener el usuario autenticado
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails userDetails)) {
             throw new RuntimeException("User is not authenticated");
         }
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
 
-        return IUserService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return IUserService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @PostMapping
@@ -55,25 +55,21 @@ public class ItemController {
         item.setOwner(owner);
 
         // Crear el item
-        Item createdObject = IItemService.createItem(item);
+        Item createdItem = specialItemService.createItem(item);
 
         // Usar el mapper para convertir el item en un DTO de salida
-        ItemResponse responseDto = itemMapper.toResponse(createdObject);
+        ItemResponse responseDto = itemMapper.toResponse(createdItem);
 
         ApiResponse apiResponse = new ApiResponse("Item created successfully", responseDto);
         return ResponseEntity.status(201).body(apiResponse);
     }
 
-    //TODO: PATCH
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody @Valid ItemRequest itemRequest) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody ItemRequest itemRequest) {
         User authenticatedUser = getAuthenticatedUser();
-
-        // Validar la propiedad directamente a través del servicio
         IItemService.validateOwnership(id, authenticatedUser);
 
-        Item item = itemMapper.toDomain(itemRequest);
-        Item updatedObject = IItemService.updateItem(id, item);
+        Item updatedObject = IItemService.updateItem(id, itemMapper.toDomain(itemRequest));
         ItemResponse responseDto = itemMapper.toResponse(updatedObject);
 
         ApiResponse apiResponse = new ApiResponse("Item updated successfully", responseDto);
@@ -104,9 +100,7 @@ public class ItemController {
         Page<Item> itemsPage = IItemService.findAllByOwnerId(owner.getId(), pageable);
 
         // Convertir cada item en un DTO usando el mapper
-        List<ItemResponse> responseDtos = itemsPage.stream()
-                .map(itemMapper::toResponse)
-                .toList();
+        List<ItemResponse> responseDtos = itemsPage.stream().map(itemMapper::toResponse).toList();
 
         // Crear una respuesta con los datos de la página
         Map<String, Object> response = new HashMap<>();
