@@ -5,10 +5,12 @@ import com.acl.municipalidad.items.domain.dto.request.ItemRequest;
 import com.acl.municipalidad.items.domain.dto.response.ApiResponse;
 import com.acl.municipalidad.items.domain.dto.response.ItemResponse;
 import com.acl.municipalidad.items.domain.model.Item;
-import com.acl.municipalidad.items.domain.service.IItemService;
-import com.acl.municipalidad.items.infrastructure.service.SpecialItemService;
+import com.acl.municipalidad.items.domain.service.IItemCrudService;
+import com.acl.municipalidad.items.domain.service.IItemQueryService;
+import com.acl.municipalidad.items.domain.service.IItemValidationService;
+import com.acl.municipalidad.items.infrastructure.service.SpecialItemCrudService;
 import com.acl.municipalidad.user.domain.model.User;
-import com.acl.municipalidad.user.domain.service.IUserService;
+import com.acl.municipalidad.user.domain.service.IUserQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,10 +30,11 @@ import java.util.Map;
 @RequestMapping("/api/v1/items")
 @RequiredArgsConstructor
 public class ItemController {
-
-    private final IItemService IItemService;
-    private final SpecialItemService specialItemService;
-    private final IUserService IUserService;
+    private final IItemCrudService IItemCrudService;
+    private final IItemQueryService IItemQueryService;
+    private final IItemValidationService IItemValidationService;
+    private final SpecialItemCrudService specialItemService;
+    private final IUserQueryService IUserQueryService;
     private final ItemMapper itemMapper;
 
     // Método privado para obtener el usuario autenticado
@@ -43,7 +46,7 @@ public class ItemController {
 
         String email = userDetails.getUsername();
 
-        return IUserService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        return IUserQueryService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @PostMapping
@@ -67,9 +70,9 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody ItemRequest itemRequest) {
         User authenticatedUser = getAuthenticatedUser();
-        IItemService.validateOwnership(id, authenticatedUser);
+        IItemValidationService.validateOwnership(id, authenticatedUser);
 
-        Item updatedObject = IItemService.updateItem(id, itemMapper.toDomain(itemRequest));
+        Item updatedObject = IItemCrudService.updateItem(id, itemMapper.toDomain(itemRequest));
         ItemResponse responseDto = itemMapper.toResponse(updatedObject);
 
         ApiResponse apiResponse = new ApiResponse("Item updated successfully", responseDto);
@@ -79,14 +82,14 @@ public class ItemController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         User authenticatedUser = getAuthenticatedUser();
-        IItemService.validateOwnership(id, authenticatedUser);
-        IItemService.deleteItem(id);
+        IItemValidationService.validateOwnership(id, authenticatedUser);
+        IItemCrudService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> findById(@PathVariable Long id) {
-        Item item = IItemService.findItemById(id);
+        Item item = IItemCrudService.findItemById(id);
         ItemResponse responseDto = itemMapper.toResponse(item);
         ApiResponse apiResponse = new ApiResponse("Item found successfully", responseDto);
         return ResponseEntity.ok(apiResponse);
@@ -97,7 +100,7 @@ public class ItemController {
         User owner = getAuthenticatedUser();
 
         // Buscar todos los items que pertenezcan al usuario autenticado con paginación
-        Page<Item> itemsPage = IItemService.findAllByOwnerId(owner.getId(), pageable);
+        Page<Item> itemsPage = IItemQueryService.findAllByOwnerId(owner.getId(), pageable);
 
         // Convertir cada item en un DTO usando el mapper
         List<ItemResponse> responseDtos = itemsPage.stream().map(itemMapper::toResponse).toList();

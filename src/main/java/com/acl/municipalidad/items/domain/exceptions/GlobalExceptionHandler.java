@@ -1,7 +1,7 @@
-package com.acl.municipalidad.items.infrastructure.exceptions;
+package com.acl.municipalidad.items.domain.exceptions;
 
 import com.acl.municipalidad.items.domain.dto.response.ApiResponse;
-import com.acl.municipalidad.user.infrastructure.exceptions.EmailAlreadyExistsException;
+import com.acl.municipalidad.user.domain.exceptions.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

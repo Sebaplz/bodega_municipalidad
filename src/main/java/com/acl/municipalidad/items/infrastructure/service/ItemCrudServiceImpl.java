@@ -2,9 +2,11 @@ package com.acl.municipalidad.items.infrastructure.service;
 
 import com.acl.municipalidad.items.domain.model.Item;
 import com.acl.municipalidad.items.domain.repository.IItemRepository;
-import com.acl.municipalidad.items.domain.service.IItemService;
-import com.acl.municipalidad.items.infrastructure.exceptions.ResourceNotFoundException;
-import com.acl.municipalidad.items.infrastructure.exceptions.UnauthorizedException;
+import com.acl.municipalidad.items.domain.service.IItemCrudService;
+import com.acl.municipalidad.items.domain.exceptions.ResourceNotFoundException;
+import com.acl.municipalidad.items.domain.exceptions.UnauthorizedException;
+import com.acl.municipalidad.items.domain.service.IItemQueryService;
+import com.acl.municipalidad.items.domain.service.IItemValidationService;
 import com.acl.municipalidad.user.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ItemServiceImpl implements IItemService {
+public class ItemCrudServiceImpl implements IItemCrudService, IItemQueryService, IItemValidationService {
     private final IItemRepository itemRepository;
 
     // Método privado para encontrar un item por su ID o lanzar una excepción si no se encuentra

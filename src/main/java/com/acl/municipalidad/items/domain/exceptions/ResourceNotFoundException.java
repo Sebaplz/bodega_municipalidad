@@ -1,4 +1,4 @@
-package com.acl.municipalidad.items.infrastructure.exceptions;
+package com.acl.municipalidad.items.domain.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

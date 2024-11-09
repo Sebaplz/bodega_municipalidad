@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-public class SpecialItemService extends ItemServiceImpl {
+public class SpecialItemCrudService extends ItemCrudServiceImpl {
 
-    public SpecialItemService(IItemRepository itemRepository) {
+    public SpecialItemCrudService(IItemRepository itemRepository) {
         super(itemRepository);
     }
 
