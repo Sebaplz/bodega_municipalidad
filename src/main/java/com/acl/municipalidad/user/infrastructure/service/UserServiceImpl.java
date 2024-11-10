@@ -4,11 +4,13 @@ import com.acl.municipalidad.security.JwtService;
 import com.acl.municipalidad.user.domain.model.Role;
 import com.acl.municipalidad.user.domain.model.User;
 import com.acl.municipalidad.user.domain.repository.IUserRepository;
-import com.acl.municipalidad.user.domain.service.IUserService;
+import com.acl.municipalidad.user.domain.service.IUserAuthenticationService;
+import com.acl.municipalidad.user.domain.service.IUserQueryService;
+import com.acl.municipalidad.user.domain.service.IUserRegistrationService;
 import com.acl.municipalidad.user.domain.dto.request.AuthenticationRequest;
 import com.acl.municipalidad.user.domain.dto.request.RegisterRequest;
-import com.acl.municipalidad.user.infrastructure.exceptions.EmailAlreadyExistsException;
-import com.acl.municipalidad.user.infrastructure.exceptions.EmailNotFoundException;
+import com.acl.municipalidad.user.domain.exceptions.EmailAlreadyExistsException;
+import com.acl.municipalidad.user.domain.exceptions.EmailNotFoundException;
 import com.acl.municipalidad.user.domain.repository.IUserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IUserServiceImpl implements IUserService {
+public class UserServiceImpl implements IUserRegistrationService, IUserAuthenticationService, IUserQueryService {
     private final IUserRepository IUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;

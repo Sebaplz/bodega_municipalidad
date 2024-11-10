@@ -1,7 +1,7 @@
-package com.acl.municipalidad.items.infrastructure.exceptions;
+package com.acl.municipalidad.items.domain.exceptions;
 
 import com.acl.municipalidad.items.domain.dto.response.ApiResponse;
-import com.acl.municipalidad.user.infrastructure.exceptions.EmailAlreadyExistsException;
+import com.acl.municipalidad.user.domain.exceptions.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,6 +35,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleUserAlreadyExists(EmailAlreadyExistsException ex) {
         ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
+    @ExceptionHandler(SpecialItemException.class)
+    public ResponseEntity<ApiResponse> handleResourceNotFound(SpecialItemException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
 
 }
