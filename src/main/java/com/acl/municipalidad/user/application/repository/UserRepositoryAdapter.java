@@ -20,11 +20,6 @@ public class UserRepositoryAdapter implements IUserRepository {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return IUserJpaRepository.findById(id).map(UserEntity::toDomain);
-    }
-
-    @Override
     public void save(User user) {
         UserEntity entity = UserEntity.fromDomain(user);
         UserEntity savedEntity = IUserJpaRepository.save(entity);
