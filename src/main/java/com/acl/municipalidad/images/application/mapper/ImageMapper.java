@@ -1,22 +1,25 @@
 package com.acl.municipalidad.images.application.mapper;
 
-import com.acl.municipalidad.images.domain.entity.ImageEntity;
+import com.acl.municipalidad.images.domain.dto.request.ImageRequest;
+import com.acl.municipalidad.images.domain.dto.response.ImageResponse;
 import com.acl.municipalidad.images.domain.model.Image;
-import com.acl.municipalidad.items.domain.entity.ItemEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ImageMapper {
-    public static Image toDomainModel(ImageEntity entity) {
-        return Image.builder()
-                .id(entity.getId())
-                .url(entity.getUrl())
-                .itemId(entity.getItem().getId())
-                .build();
+    // Convertir Image a ImageResponse (DTO de salida)
+    public ImageResponse toResponse(Image image) {
+        return new ImageResponse(
+                image.getId(),
+                image.getUrl()
+        );
     }
 
-    public static ImageEntity toEntity(Image image, ItemEntity itemEntity) {
-        return ImageEntity.builder()
-                .url(image.getUrl())
-                .item(itemEntity)
+    // Convertir ImageRequest (DTO de entrada) a Image (dominio)
+    public Image toDomain(ImageRequest imageRequest, Long itemId) {
+        return Image.builder()
+                .url(imageRequest.getUrl())
+                .itemId(itemId)
                 .build();
     }
 }

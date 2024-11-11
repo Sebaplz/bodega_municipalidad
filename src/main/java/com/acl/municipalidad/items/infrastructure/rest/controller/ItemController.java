@@ -10,16 +10,13 @@ import com.acl.municipalidad.items.domain.service.IItemQueryService;
 import com.acl.municipalidad.items.domain.service.IItemValidationService;
 import com.acl.municipalidad.items.infrastructure.service.SpecialItemCrudService;
 import com.acl.municipalidad.user.domain.model.User;
-import com.acl.municipalidad.user.domain.service.IUserQueryService;
+import com.acl.municipalidad.user.infrastructure.service.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -33,25 +30,13 @@ public class ItemController {
     private final IItemCrudService IItemCrudService;
     private final IItemQueryService IItemQueryService;
     private final IItemValidationService IItemValidationService;
+    private final AuthenticatedUserService authenticatedUserService;
     private final SpecialItemCrudService specialItemService;
-    private final IUserQueryService IUserQueryService;
     private final ItemMapper itemMapper;
-
-    // Método privado para obtener el usuario autenticado
-    private User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails userDetails)) {
-            throw new RuntimeException("User is not authenticated");
-        }
-
-        String email = userDetails.getUsername();
-
-        return IUserQueryService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-    }
 
     @PostMapping
     public ResponseEntity<ApiResponse> create(@RequestBody @Valid ItemRequest itemRequest) {
-        User owner = getAuthenticatedUser();
+        User owner = authenticatedUserService.getAuthenticatedUser();
 
         // Convertir el DTO de entrada en un objeto Item
         Item item = itemMapper.toDomain(itemRequest);
@@ -69,8 +54,8 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody ItemRequest itemRequest) {
-        User authenticatedUser = getAuthenticatedUser();
-        IItemValidationService.validateOwnership(id, authenticatedUser);
+        User owner = authenticatedUserService.getAuthenticatedUser();
+        IItemValidationService.validateOwnership(id, owner);
 
         Item updatedObject = IItemCrudService.updateItem(id, itemMapper.toDomain(itemRequest));
         ItemResponse responseDto = itemMapper.toResponse(updatedObject);
@@ -81,8 +66,8 @@ public class ItemController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        User authenticatedUser = getAuthenticatedUser();
-        IItemValidationService.validateOwnership(id, authenticatedUser);
+        User owner = authenticatedUserService.getAuthenticatedUser();
+        IItemValidationService.validateOwnership(id, owner);
         IItemCrudService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
@@ -97,7 +82,7 @@ public class ItemController {
 
     @GetMapping("/my-items")
     public ResponseEntity<ApiResponse> findAllByOwner(@PageableDefault(size = 10) Pageable pageable) {
-        User owner = getAuthenticatedUser();
+        User owner = authenticatedUserService.getAuthenticatedUser();
 
         // Buscar todos los items que pertenezcan al usuario autenticado con paginación
         Page<Item> itemsPage = IItemQueryService.findAllByOwnerId(owner.getId(), pageable);

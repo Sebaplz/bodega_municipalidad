@@ -1,10 +1,10 @@
 package com.acl.municipalidad.items.infrastructure.service;
 
+import com.acl.municipalidad.items.domain.exceptions.ResourceNotFoundException;
+import com.acl.municipalidad.items.domain.exceptions.UnauthorizedException;
 import com.acl.municipalidad.items.domain.model.Item;
 import com.acl.municipalidad.items.domain.repository.IItemRepository;
 import com.acl.municipalidad.items.domain.service.IItemCrudService;
-import com.acl.municipalidad.items.domain.exceptions.ResourceNotFoundException;
-import com.acl.municipalidad.items.domain.exceptions.UnauthorizedException;
 import com.acl.municipalidad.items.domain.service.IItemQueryService;
 import com.acl.municipalidad.items.domain.service.IItemValidationService;
 import com.acl.municipalidad.user.domain.model.User;
@@ -62,11 +62,11 @@ public class ItemCrudServiceImpl implements IItemCrudService, IItemQueryService,
         return itemRepository.findAllByOwnerId(ownerId, pageable);
     }
 
-    public void validateOwnership(Long objectId, User authenticatedUser) {
-        Item existingItem = findItemOrThrow(objectId);
+    public void validateOwnership(Long itemId, User authenticatedUser) {
+        Item existingItem = findItemOrThrow(itemId);
 
         if (!existingItem.getOwner().getId().equals(authenticatedUser.getId())) {
-            throw new UnauthorizedException("User does not have permission to modify this object");
+            throw new UnauthorizedException("User does not have permission to modify this item");
         }
     }
 }
