@@ -24,17 +24,44 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// Spring Boot Web Starter
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Spring Boot JPA for Data Persistence
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// Spring Security for Authentication and Authorization
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// JWT for JSON Web Token Implementation
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// Validation API (e.g., for request validations using @Valid)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Springdoc for OpenAPI Documentation
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' // Cambia a la última versión disponible
+
+	// Lombok for Reducing Boilerplate Code
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	// Spring Boot DevTools for Development Convenience
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// Database Driver
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Spring Boot Test Starter for Unit Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.springframework.security:spring-security-test'
+	// Mockito para simular dependencias
+	testImplementation 'org.mockito:mockito-core'
 }
+
+
 
 tasks.named('test') {
 	useJUnitPlatform()
