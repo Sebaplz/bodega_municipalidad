@@ -15,29 +15,29 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ImageRepositoryAdapter implements IImageRepository {
-    private final IImageJpaRepository IImageJpaRepository;
+    private final IImageJpaRepository imageJpaRepository;
 
     @Override
     public Image save(Image image, Item item) {
         ItemEntity itemEntity = ItemEntity.fromDomain(item);
         ImageEntity entity = ImageEntity.fromDomain(image, itemEntity);
-        ImageEntity savedEntity = IImageJpaRepository.save(entity);
+        ImageEntity savedEntity = imageJpaRepository.save(entity);
         return savedEntity.toDomain();
     }
 
     @Override
     public void deleteById(Long id) {
-        IImageJpaRepository.deleteById(id);
+        imageJpaRepository.deleteById(id);
     }
 
     @Override
     public Optional<Image> findById(Long id) {
-        return IImageJpaRepository.findById(id).map(ImageEntity::toDomain);
+        return imageJpaRepository.findById(id).map(ImageEntity::toDomain);
     }
 
     @Override
     public List<Image> findByItemId(Long itemId) {
-        List<ImageEntity> imageEntities = IImageJpaRepository.findByItemId(itemId);
+        List<ImageEntity> imageEntities = imageJpaRepository.findByItemId(itemId);
         return imageEntities.stream().map(ImageEntity::toDomain).toList();
     }
 }

@@ -21,22 +21,22 @@ import java.util.List;
 @RequestMapping("/api/v1/images")
 @RequiredArgsConstructor
 public class ImageController {
-    private final IItemValidationService IItemValidationService;
-    private final IImageCrudService IImageCrudService;
-    private final IItemCrudService IItemCrudService;
+    private final IItemValidationService itemValidationService;
+    private final IImageCrudService imageCrudService;
+    private final IItemCrudService itemCrudService;
     private final ImageMapper imageMapper;
     private final AuthenticatedUserService authenticatedUserService;
 
     @PostMapping("/{itemId}")
     public ResponseEntity<ApiResponse> createImage(@PathVariable Long itemId, @RequestBody ImageRequest imageRequest) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(itemId, owner);
-        Item item = IItemCrudService.findItemById(itemId);
+        itemValidationService.validateOwnership(itemId, owner);
+        Item item = itemCrudService.findItemById(itemId);
 
         // Convertir el DTO de entrada en un objeto Image
         Image createdImage = imageMapper.toDomain(imageRequest, itemId);
 
-        Image image = IImageCrudService.createImage(createdImage, item);
+        Image image = imageCrudService.createImage(createdImage, item);
 
         ImageResponse responseDto = imageMapper.toResponse(image);
 
@@ -47,9 +47,9 @@ public class ImageController {
     @GetMapping("/all-images/{itemId}")
     public ResponseEntity<ApiResponse> findAllImages(@PathVariable Long itemId) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(itemId, owner);
+        itemValidationService.validateOwnership(itemId, owner);
 
-        List<Image> images = IImageCrudService.findByItemId(itemId);
+        List<Image> images = imageCrudService.findByItemId(itemId);
 
         List<ImageResponse> responseDtos = images.stream().map(imageMapper::toResponse).toList();
 
@@ -60,16 +60,16 @@ public class ImageController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long id, @RequestParam Long itemId) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(itemId, owner);
-        IImageCrudService.deleteImage(id);
+        itemValidationService.validateOwnership(itemId, owner);
+        imageCrudService.deleteImage(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> findImageById(@PathVariable Long id, @RequestParam Long itemId ) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(itemId, owner);
-        Image image = IImageCrudService.findImageById(id);
+        itemValidationService.validateOwnership(itemId, owner);
+        Image image = imageCrudService.findImageById(id);
         ImageResponse responseDto = imageMapper.toResponse(image);
         ApiResponse apiResponse = new ApiResponse("Image found successfully", responseDto);
         return ResponseEntity.ok(apiResponse);
@@ -78,9 +78,9 @@ public class ImageController {
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse> updateImage(@PathVariable Long id, @RequestBody ImageRequest imageRequest, @RequestParam Long itemId) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(itemId, owner);
+        itemValidationService.validateOwnership(itemId, owner);
 
-        Image updatedObject = IImageCrudService.updateImage(id, imageRequest.getUrl(), itemId);
+        Image updatedObject = imageCrudService.updateImage(id, imageRequest.getUrl(), itemId);
         ImageResponse responseDto = imageMapper.toResponse(updatedObject);
 
         ApiResponse apiResponse = new ApiResponse("Image updated successfully", responseDto);

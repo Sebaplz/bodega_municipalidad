@@ -41,6 +41,9 @@ dependencies {
 	// Validation API (e.g., for request validations using @Valid)
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// Springdoc for OpenAPI Documentation
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' // Cambia a la última versión disponible
+
 	// Lombok for Reducing Boilerplate Code
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class AuthController {
-    private final IUserRegistrationService IUserRegistrationService;
-    private final IUserAuthenticationService IUserAuthenticationService;
+    private final IUserRegistrationService userRegistrationService;
+    private final IUserAuthenticationService userAuthenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest request) {
-        IUserRegistrationService.registerUser(request);
+        userRegistrationService.registerUser(request);
         return ResponseEntity.ok(new ApiResponse("User registered successfully", null));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody @Valid AuthenticationRequest request) {
         try {
-            String jwt = IUserAuthenticationService.authenticationUser(request);
+            String jwt = userAuthenticationService.authenticationUser(request);
             return ResponseEntity.ok(new ApiResponse("User logged in successfully", jwt));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ApiResponse("Invalid credentials", null));

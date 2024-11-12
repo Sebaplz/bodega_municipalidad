@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticatedUserService {
 
-    private final IUserQueryService IUserQueryService;
+    private final IUserQueryService userQueryService;
 
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -23,6 +23,6 @@ public class AuthenticatedUserService {
 
         String email = userDetails.getUsername();
 
-        return IUserQueryService.findByEmail(email).orElseThrow(() -> new EmailNotFoundException("User not found"));
+        return userQueryService.findByEmail(email).orElseThrow(() -> new EmailNotFoundException("User not found"));
     }
 }

@@ -8,7 +8,6 @@ import com.acl.municipalidad.items.domain.model.Item;
 import com.acl.municipalidad.items.domain.service.IItemCrudService;
 import com.acl.municipalidad.items.domain.service.IItemQueryService;
 import com.acl.municipalidad.items.domain.service.IItemValidationService;
-import com.acl.municipalidad.items.infrastructure.service.SpecialItemCrudService;
 import com.acl.municipalidad.user.domain.model.User;
 import com.acl.municipalidad.user.infrastructure.service.AuthenticatedUserService;
 import jakarta.validation.Valid;
@@ -27,11 +26,10 @@ import java.util.Map;
 @RequestMapping("/api/v1/items")
 @RequiredArgsConstructor
 public class ItemController {
-    private final IItemCrudService IItemCrudService;
-    private final IItemQueryService IItemQueryService;
-    private final IItemValidationService IItemValidationService;
+    private final IItemCrudService itemCrudService;
+    private final IItemQueryService itemQueryService;
+    private final IItemValidationService itemValidationService;
     private final AuthenticatedUserService authenticatedUserService;
-    private final SpecialItemCrudService specialItemService;
     private final ItemMapper itemMapper;
 
     @PostMapping
@@ -43,7 +41,7 @@ public class ItemController {
         item.setOwner(owner);
 
         // Crear el item
-        Item createdItem = specialItemService.createItem(item);
+        Item createdItem = itemCrudService.createItem(item);
 
         // Usar el mapper para convertir el item en un DTO de salida
         ItemResponse responseDto = itemMapper.toResponse(createdItem);
@@ -55,9 +53,9 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody ItemRequest itemRequest) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(id, owner);
+        itemValidationService.validateOwnership(id, owner);
 
-        Item updatedObject = IItemCrudService.updateItem(id, itemMapper.toDomain(itemRequest));
+        Item updatedObject = itemCrudService.updateItem(id, itemMapper.toDomain(itemRequest));
         ItemResponse responseDto = itemMapper.toResponse(updatedObject);
 
         ApiResponse apiResponse = new ApiResponse("Item updated successfully", responseDto);
@@ -67,14 +65,14 @@ public class ItemController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         User owner = authenticatedUserService.getAuthenticatedUser();
-        IItemValidationService.validateOwnership(id, owner);
-        IItemCrudService.deleteItem(id);
+        itemValidationService.validateOwnership(id, owner);
+        itemCrudService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> findById(@PathVariable Long id) {
-        Item item = IItemCrudService.findItemById(id);
+        Item item = itemCrudService.findItemById(id);
         ItemResponse responseDto = itemMapper.toResponse(item);
         ApiResponse apiResponse = new ApiResponse("Item found successfully", responseDto);
         return ResponseEntity.ok(apiResponse);
@@ -85,7 +83,7 @@ public class ItemController {
         User owner = authenticatedUserService.getAuthenticatedUser();
 
         // Buscar todos los items que pertenezcan al usuario autenticado con paginación
-        Page<Item> itemsPage = IItemQueryService.findAllByOwnerId(owner.getId(), pageable);
+        Page<Item> itemsPage = itemQueryService.findAllByOwnerId(owner.getId(), pageable);
 
         // Convertir cada item en un DTO usando el mapper
         List<ItemResponse> responseDtos = itemsPage.stream().map(itemMapper::toResponse).toList();
