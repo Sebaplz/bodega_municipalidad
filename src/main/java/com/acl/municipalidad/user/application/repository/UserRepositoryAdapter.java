@@ -12,22 +12,17 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserRepositoryAdapter implements IUserRepository {
-    private final IUserJpaRepository IUserJpaRepository;
+    private final IUserJpaRepository userJpaRepository;
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return IUserJpaRepository.findByEmail(email).map(UserEntity::toDomain);
-    }
-
-    @Override
-    public Optional<User> findById(Long id) {
-        return IUserJpaRepository.findById(id).map(UserEntity::toDomain);
+        return userJpaRepository.findByEmail(email).map(UserEntity::toDomain);
     }
 
     @Override
     public void save(User user) {
         UserEntity entity = UserEntity.fromDomain(user);
-        UserEntity savedEntity = IUserJpaRepository.save(entity);
+        UserEntity savedEntity = userJpaRepository.save(entity);
         savedEntity.toDomain();
     }
 }

@@ -1,9 +1,13 @@
 package com.acl.municipalidad.items.domain.entity;
 
+import com.acl.municipalidad.images.domain.entity.ImageEntity;
 import com.acl.municipalidad.items.domain.model.Item;
 import com.acl.municipalidad.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "items")
@@ -28,6 +32,9 @@ public class ItemEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImageEntity> images = new ArrayList<>();
 
     // Métodos de conversión para el dominio
     public Item toDomain() {

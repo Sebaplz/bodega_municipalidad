@@ -25,20 +25,20 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserRegistrationService, IUserAuthenticationService, IUserQueryService {
-    private final IUserRepository IUserRepository;
+    private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final IUserJpaRepository IUserJpaRepository;
+    private final IUserJpaRepository userJpaRepository;
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return IUserRepository.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public void registerUser(RegisterRequest request) {
-        Optional<User> existingUser = IUserRepository.findByEmail(request.getEmail());
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
             throw new EmailAlreadyExistsException("Email is already registered");
         }
@@ -49,7 +49,7 @@ public class UserServiceImpl implements IUserRegistrationService, IUserAuthentic
         newUser.setEmail(request.getEmail());
         newUser.setPassword(encodedPassword);
         newUser.setRole(Role.ADMIN);
-        IUserRepository.save(newUser);
+        userRepository.save(newUser);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class UserServiceImpl implements IUserRegistrationService, IUserAuthentic
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
-            var user = IUserJpaRepository.findByEmail(request.getEmail())
+            var user = userJpaRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new EmailNotFoundException("User not found"));
 
             return jwtService.generateToken(user);

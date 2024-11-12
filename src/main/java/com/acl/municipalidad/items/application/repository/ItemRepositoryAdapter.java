@@ -16,29 +16,29 @@ import java.util.Optional;
 //TODO: Problema con los nombres?
 public class ItemRepositoryAdapter implements IItemRepository {
 
-    private final IItemJpaRepository IItemJpaRepository;
+    private final IItemJpaRepository itemJpaRepository;
 
     @Override
     public Item save(Item item) {
         ItemEntity entity = ItemEntity.fromDomain(item);
-        ItemEntity savedEntity = IItemJpaRepository.save(entity);
+        ItemEntity savedEntity = itemJpaRepository.save(entity);
         return savedEntity.toDomain();
     }
 
     @Override
     public Optional<Item> findById(Long id) {
-        return IItemJpaRepository.findById(id).map(ItemEntity::toDomain);
+        return itemJpaRepository.findById(id).map(ItemEntity::toDomain);
     }
 
     @Override
     public void deleteById(Long id) {
-        IItemJpaRepository.deleteById(id);
+        itemJpaRepository.deleteById(id);
     }
 
     @Override
     public Page<Item> findAllByOwnerId(Long ownerId, Pageable pageable) {
         // Obtener una página de ItemsEntity desde el repositorio
-        Page<ItemEntity> entityPage = IItemJpaRepository.findByOwnerId(ownerId, pageable);
+        Page<ItemEntity> entityPage = itemJpaRepository.findByOwnerId(ownerId, pageable);
 
         // Convertir cada entidad en un item de dominio Items usando map()
         return entityPage.map(this::convertToDomain);

@@ -1,5 +1,6 @@
 package com.acl.municipalidad.items.domain.exceptions;
 
+import com.acl.municipalidad.images.domain.exceptions.ImageLimitExceededException;
 import com.acl.municipalidad.items.domain.dto.response.ApiResponse;
 import com.acl.municipalidad.user.domain.exceptions.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -49,4 +50,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse> handleUnauthorized(UnauthorizedException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+    }
+
+    @ExceptionHandler(ImageLimitExceededException.class)
+    public ResponseEntity<ApiResponse> handleImageLimitExceeded(ImageLimitExceededException ex) {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
 }
